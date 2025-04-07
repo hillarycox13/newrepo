@@ -1,34 +1,17 @@
-name: Node.js CI
-
-on:
-  push:
-    branches:
-      - master  # Or the branch you're working on
-  pull_request:
-    branches:
-      - master  # Or the branch you're working on
-
+name: npm test
+on: [push]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        node_version: [18.x]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'  # Change this to your Node.js version
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Verify Node.js and npm versions
-        run: |
-          node --version
-          npm --version
-
-      - name: Run tests
-        run: npm test
-
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run build --if-present
+      - run: npm test
